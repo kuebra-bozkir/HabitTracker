@@ -29,9 +29,10 @@ public class Habit
     {
         get
         {
+            var dates = CompletedDates.Select(x => x.Date).ToHashSet();
             var s = 0;
             var d = DateTime.Today;
-            while (CompletedDates.Any(x => x.Date == d)) { s++; d = d.AddDays(-1); }
+            while (dates.Contains(d)) { s++; d = d.AddDays(-1); }
             return s;
         }
     }

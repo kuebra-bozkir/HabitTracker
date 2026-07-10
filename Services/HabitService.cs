@@ -7,23 +7,34 @@ public class HabitService : IHabitService
 {
     private readonly string _filePath = Path.Combine(FileSystem.AppDataDirectory, "habits.json");
     private readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
+    private readonly SemaphoreSlim _lock = new(1, 1);
     private List<Habit>? _cache;
 
     public async Task<List<Habit>> GetHabitsAsync()
     {
         if (_cache is not null) return _cache;
-        if (!File.Exists(_filePath)) return _cache = new List<Habit>();
 
-        var json = await File.ReadAllTextAsync(_filePath);
+        await _lock.WaitAsync();
         try
         {
-            _cache = JsonSerializer.Deserialize<List<Habit>>(json) ?? new List<Habit>();
+            if (_cache is not null) return _cache;
+            if (!File.Exists(_filePath)) return _cache = [];
+
+            var json = await File.ReadAllTextAsync(_filePath);
+            try
+            {
+                _cache = JsonSerializer.Deserialize<List<Habit>>(json) ?? [];
+            }
+            catch (JsonException)
+            {
+                _cache = [];
+            }
+            return _cache;
         }
-        catch
+        finally
         {
-            _cache = new List<Habit>();
+            _lock.Release();
         }
-        return _cache;
     }
 
     public async Task SaveHabitAsync(Habit habit)

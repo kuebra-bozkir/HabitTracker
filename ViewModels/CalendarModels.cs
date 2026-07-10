@@ -25,8 +25,3 @@ public partial class CalendarDay : ObservableObject
         IsCompleted  ? AccentColor        :
                        DefaultBackground;
 }
-
-public class CalendarWeek
-{
-    public List<CalendarDay> Days { get; set; } = new();
-}

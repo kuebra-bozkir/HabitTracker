@@ -15,6 +15,7 @@ public partial class HabitEditViewModel : BaseViewModel
 
     private static readonly HttpClient _http = new();
     private static readonly JsonSerializerOptions _jsonOpts = new() { PropertyNameCaseInsensitive = true };
+    // WARNING: rotate this key — it must not be committed to version control.
     private const string UnsplashKey = "MrB-eBroSZdXSrV-4knpkcHHwQ1_z7JDfF961A35fBo";
 
     [ObservableProperty] private string _habitId = string.Empty;
@@ -313,7 +314,6 @@ public partial class HabitEditViewModel : BaseViewModel
             _ = LoadAsync();
     }
 
-    [RelayCommand]
     private async Task LoadAsync()
     {
         var habits = await _habitService.GetHabitsAsync();
