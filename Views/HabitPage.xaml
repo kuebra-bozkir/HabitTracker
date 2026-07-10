@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="HabitTracker.Views.HabitPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:HabitTracker.ViewModels"
+             xmlns:conv="clr-namespace:HabitTracker.Converters"
+             x:Name="habitPage"
+             x:DataType="vm:HabitViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
+
+    <ContentPage.Resources>
+        <conv:ColorNameToColorConverter  x:Key="ColorName"/>
+        <conv:IsUrlConverter             x:Key="IsUrl"/>
+        <conv:IsNotUrlConverter          x:Key="IsNotUrl"/>
+        <conv:IsNotNullOrEmptyConverter  x:Key="IsNotNullOrEmpty"/>
+    </ContentPage.Resources>
+
+    <Grid>
+
+        <!-- ── 1–3  Background ── -->
+        <BoxView BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}"/>
+        <BoxView BackgroundColor="{Binding BackgroundColor, Converter={StaticResource ColorName}}"
+                 IsVisible="{Binding BackgroundColor, Converter={StaticResource IsNotNullOrEmpty}}"/>
+        <Grid IsVisible="{Binding BackgroundImageUrl, Converter={StaticResource IsNotNullOrEmpty}}">
+            <Image Source="{Binding BackgroundImageUrl}" Aspect="AspectFill"/>
+            <BoxView BackgroundColor="#55000000"/>
+        </Grid>
+
+        <!-- ── Content ── -->
+        <Border Margin="0"
+                Stroke="Transparent"
+                BackgroundColor="Transparent">
+            <ScrollView BackgroundColor="Transparent">
+                <VerticalStackLayout Padding="20,96,20,48" Spacing="0">
+
+                    <!-- Icon + Habit name -->
+                    <Border StrokeShape="RoundRectangle 12"
+                            Stroke="Transparent"
+                            BackgroundColor="{AppThemeBinding Light=#DDFFFFFF, Dark=#DD1C1C1E}"
+                            Padding="16,10"
+                            Margin="0,4,0,20"
+                            HorizontalOptions="Center">
+                        <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                            <Grid WidthRequest="32" HeightRequest="32"
+                                  IsVisible="{Binding Icon, Converter={StaticResource IsNotNullOrEmpty}}">
+                                <Label Text="{Binding Icon}"
+                                       FontSize="24"
+                                       HorizontalOptions="Center" VerticalOptions="Center"
+                                       IsVisible="{Binding Icon, Converter={StaticResource IsNotUrl}}"/>
+                                <Image Source="{Binding Icon}"
+                                       Aspect="AspectFit"
+                                       IsVisible="{Binding Icon, Converter={StaticResource IsUrl}}"/>
+                            </Grid>
+                            <Label Text="{Binding Name}"
+                                   FontSize="22"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center"
+                                   TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"/>
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <!-- ── Calendar ── -->
+                    <Border StrokeShape="RoundRectangle 16"
+                            Stroke="Transparent"
+                            BackgroundColor="{AppThemeBinding Light=#DDFFFFFF, Dark=#DD1C1C1E}"
+                            Padding="8,10">
+                        <VerticalStackLayout Spacing="4">
+                            <Grid ColumnDefinitions="44,*,44">
+                                <Button Grid.Column="0"
+                                        Text="‹" FontSize="22" Padding="0"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                                        BackgroundColor="Transparent"
+                                        Command="{Binding PreviousMonthCommand}"/>
+                                <Label Grid.Column="1"
+                                       Text="{Binding MonthYearLabel}"
+                                       FontSize="15" FontAttributes="Bold"
+                                       HorizontalOptions="Center" VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"/>
+                                <Button Grid.Column="2"
+                                        Text="›" FontSize="22" Padding="0"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                                        BackgroundColor="Transparent"
+                                        Command="{Binding NextMonthCommand}"/>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,*,*,*,*,*,*" Margin="0,0,0,4">
+                                <Label Grid.Column="0" Text="Su" Style="{StaticResource DayHeaderLabel}"/>
+                                <Label Grid.Column="1" Text="Mo" Style="{StaticResource DayHeaderLabel}"/>
+                                <Label Grid.Column="2" Text="Tu" Style="{StaticResource DayHeaderLabel}"/>
+                                <Label Grid.Column="3" Text="We" Style="{StaticResource DayHeaderLabel}"/>
+                                <Label Grid.Column="4" Text="Th" Style="{StaticResource DayHeaderLabel}"/>
+                                <Label Grid.Column="5" Text="Fr" Style="{StaticResource DayHeaderLabel}"/>
+                                <Label Grid.Column="6" Text="Sa" Style="{StaticResource DayHeaderLabel}"/>
+                            </Grid>
+
+                            <CollectionView ItemsSource="{Binding CalendarDays}"
+                                            HeightRequest="{Binding CalendarHeight}"
+                                            SelectionMode="Single"
+                                            SelectedItem="{Binding SelectedDay, Mode=TwoWay}">
+                                <CollectionView.ItemsLayout>
+                                    <GridItemsLayout Orientation="Vertical" Span="7"
+                                                     VerticalItemSpacing="4" HorizontalItemSpacing="4"/>
+                                </CollectionView.ItemsLayout>
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:CalendarDay">
+                                        <Grid BackgroundColor="Transparent">
+                                            <VisualStateManager.VisualStateGroups>
+                                                <VisualStateGroup x:Name="CommonStates">
+                                                    <VisualState x:Name="Normal"/>
+                                                    <VisualState x:Name="Selected">
+                                                        <VisualState.Setters>
+                                                            <Setter Property="BackgroundColor" Value="Transparent"/>
+                                                        </VisualState.Setters>
+                                                    </VisualState>
+                                                </VisualStateGroup>
+                                            </VisualStateManager.VisualStateGroups>
+                                            <Border HeightRequest="40"
+                                                    StrokeThickness="2"
+                                                    Stroke="Transparent"
+                                                    BackgroundColor="{Binding CellBackground}">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="10"/>
+                                                </Border.StrokeShape>
+                                                <Border.Triggers>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding IsEmpty}" Value="True">
+                                                        <Setter Property="InputTransparent" Value="True"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding IsFuture}" Value="True">
+                                                        <Setter Property="Opacity" Value="0.35"/>
+                                                        <Setter Property="InputTransparent" Value="True"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Border" Binding="{Binding IsToday}" Value="True">
+                                                        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"/>
+                                                    </DataTrigger>
+                                                </Border.Triggers>
+                                                <Label HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       FontSize="13"
+                                                       Text="{Binding DayNumber}"
+                                                       TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}">
+                                                    <Label.Triggers>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsEmpty}" Value="True">
+                                                            <Setter Property="IsVisible" Value="False"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger TargetType="Label" Binding="{Binding IsCompleted}" Value="True">
+                                                            <Setter Property="TextColor" Value="White"/>
+                                                            <Setter Property="FontAttributes" Value="Bold"/>
+                                                        </DataTrigger>
+                                                    </Label.Triggers>
+                                                </Label>
+                                            </Border>
+                                        </Grid>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- ── Stats ── -->
+                    <Grid ColumnDefinitions="*,*,*"
+                          ColumnSpacing="10"
+                          Margin="0,20,0,0">
+                        <Border Grid.Column="0" Style="{StaticResource StatCard}">
+                            <VerticalStackLayout HorizontalOptions="Center" Spacing="2">
+                                <Label Text="{Binding Streak}" Style="{StaticResource StatNumber}"/>
+                                <Label Text="Streak"           Style="{StaticResource StatLabel}"/>
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Column="1" Style="{StaticResource StatCard}">
+                            <VerticalStackLayout HorizontalOptions="Center" Spacing="2">
+                                <Label Text="{Binding Total}" Style="{StaticResource StatNumber}"/>
+                                <Label Text="Total"           Style="{StaticResource StatLabel}"/>
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Column="2" Style="{StaticResource StatCard}">
+                            <VerticalStackLayout HorizontalOptions="Center" Spacing="2">
+                                <Label Text="{Binding Percentage, StringFormat='{0}%'}"
+                                       Style="{StaticResource StatNumber}"/>
+                                <Label Text="This Month" Style="{StaticResource StatLabel}"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <!-- ── Notes ── -->
+                    <Border StrokeShape="RoundRectangle 8"
+                            Stroke="Transparent"
+                            BackgroundColor="{AppThemeBinding Light=#DDFFFFFF, Dark=#DD1C1C1E}"
+                            Padding="10,4"
+                            Margin="0,24,0,8"
+                            HorizontalOptions="Start">
+                        <Label Text="NOTES"
+                               FontSize="12"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"/>
+                    </Border>
+                    <Border StrokeShape="RoundRectangle 12"
+                            Stroke="Transparent"
+                            BackgroundColor="{AppThemeBinding Light=#DDFFFFFF, Dark=#DD1C1C1E}"
+                            Padding="12,8">
+                        <Editor Text="{Binding Notes}"
+                                Placeholder="Add a note…"
+                                AutoSize="TextChanges"
+                                MinimumHeightRequest="80"
+                                BackgroundColor="Transparent"
+                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                                PlaceholderColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"/>
+                    </Border>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
+
+        <!-- ── Floating buttons ── -->
+        <Button Text="←"
+                FontSize="22" TextColor="White"
+                BackgroundColor="#55000000"
+                CornerRadius="20"
+                WidthRequest="40" HeightRequest="40" Padding="0"
+                HorizontalOptions="Start" VerticalOptions="Start"
+                Margin="12,48,0,0"
+                Clicked="OnBackClicked"/>
+        <Button Text="···"
+                FontSize="18" TextColor="White"
+                BackgroundColor="#55000000"
+                CornerRadius="20"
+                WidthRequest="40" HeightRequest="40" Padding="0"
+                HorizontalOptions="End" VerticalOptions="Start"
+                Margin="0,48,12,0"
+                Command="{Binding NavigateToEditCommand}"/>
+
+    </Grid>
+</ContentPage>

@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="HabitTracker.Views.HabitEditPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:HabitTracker.ViewModels"
+             xmlns:conv="clr-namespace:HabitTracker.Converters"
+             xmlns:models="clr-namespace:HabitTracker.Models"
+             x:Name="editPage"
+             x:DataType="vm:HabitEditViewModel"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
+
+    <ContentPage.Resources>
+        <conv:ColorNameToColorConverter x:Key="ColorName"/>
+        <conv:ChevronConverter         x:Key="Chevron"/>
+        <conv:IsNotNullOrEmptyConverter x:Key="IsNotNullOrEmpty"/>
+
+        <Style x:Key="SectionCard" TargetType="Border">
+            <Setter Property="StrokeShape" Value="RoundRectangle 14"/>
+            <Setter Property="Stroke" Value="{AppThemeBinding Light=#E8E8E8, Dark=#3A3A3C}"/>
+            <Setter Property="StrokeThickness" Value="1"/>
+            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+
+        <Style x:Key="SectionTitle" TargetType="Label">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontAttributes" Value="Bold"/>
+            <Setter Property="VerticalOptions" Value="Center"/>
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"/>
+        </Style>
+
+        <Style x:Key="SectionChevron" TargetType="Label">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="VerticalOptions" Value="Center"/>
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"/>
+        </Style>
+
+        <Style x:Key="SectionDivider" TargetType="BoxView">
+            <Setter Property="HeightRequest" Value="1"/>
+            <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#E8E8E8, Dark=#3A3A3C}"/>
+        </Style>
+
+        <Style x:Key="FormEntry" TargetType="Entry">
+            <Setter Property="BackgroundColor" Value="Transparent"/>
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"/>
+            <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"/>
+            <Setter Property="HeightRequest" Value="46"/>
+        </Style>
+
+        <Style x:Key="HintLabel" TargetType="Label">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Opacity" Value="0.5"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"/>
+        </Style>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- ── Top bar ── -->
+        <Border Grid.Row="0"
+                BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource CardBackgroundDark}}"
+                Stroke="Transparent"
+                Padding="8,0">
+            <Border.Shadow>
+                <Shadow Brush="{AppThemeBinding Light=#18000000, Dark=#44000000}"
+                        Offset="0,2" Radius="6" Opacity="1"/>
+            </Border.Shadow>
+            <Grid HeightRequest="56" Margin="0,44,0,0">
+                <Label Text="Edit Habit"
+                       FontSize="17"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"/>
+                <Button Text="Cancel"
+                        FontSize="16"
+                        TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                        BackgroundColor="Transparent"
+                        HorizontalOptions="Start"
+                        Padding="8,0"
+                        Clicked="OnCancelClicked"/>
+            </Grid>
+        </Border>
+
+        <!-- ── Sections ── -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16,16,16,40" Spacing="0">
+
+                <!-- ── Name ── -->
+                <Border Style="{StaticResource SectionCard}">
+                    <VerticalStackLayout Spacing="0">
+                        <Grid Padding="16,14" ColumnDefinitions="*,Auto">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ToggleSectionCommand}"
+                                                      CommandParameter="name"/>
+                            </Grid.GestureRecognizers>
+                            <Label Grid.Column="0" Text="Name" Style="{StaticResource SectionTitle}"/>
+                            <Label Grid.Column="1"
+                                   Text="{Binding IsNameExpanded, Converter={StaticResource Chevron}}"
+                                   Style="{StaticResource SectionChevron}"/>
+                        </Grid>
+                        <VerticalStackLayout IsVisible="{Binding IsNameExpanded}" Padding="16,0,16,14">
+                            <BoxView Style="{StaticResource SectionDivider}" Margin="0,0,0,14"/>
+                            <Entry Text="{Binding Name}"
+                                   Placeholder="Habit name"
+                                   Style="{StaticResource FormEntry}"/>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ── Icon ── -->
+                <Border Style="{StaticResource SectionCard}">
+                    <VerticalStackLayout Spacing="0">
+                        <Grid Padding="16,14" ColumnDefinitions="*,Auto">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ToggleSectionCommand}"
+                                                      CommandParameter="icon"/>
+                            </Grid.GestureRecognizers>
+                            <Label Grid.Column="0" Text="Icon" Style="{StaticResource SectionTitle}"/>
+                            <Label Grid.Column="1"
+                                   Text="{Binding IsIconExpanded, Converter={StaticResource Chevron}}"
+                                   Style="{StaticResource SectionChevron}"/>
+                        </Grid>
+                        <VerticalStackLayout IsVisible="{Binding IsIconExpanded}" Padding="16,0,16,14">
+                            <BoxView Style="{StaticResource SectionDivider}" Margin="0,0,0,14"/>
+                            <Entry Text="{Binding EmojiSearch}"
+                                   Placeholder="Search emojis…"
+                                   Style="{StaticResource FormEntry}"
+                                   Margin="0,0,0,8"/>
+                            <Label Text="Choose an emoji" Style="{StaticResource HintLabel}"/>
+                            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,0,0,14">
+                                <HorizontalStackLayout Spacing="8"
+                                                       BindableLayout.ItemsSource="{Binding FilteredEmojis}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="x:String">
+                                            <Border WidthRequest="44" HeightRequest="44"
+                                                    StrokeShape="RoundRectangle 10"
+                                                    StrokeThickness="0"
+                                                    BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#2C2C2E}">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="OnEmojiTapped"/>
+                                                </Border.GestureRecognizers>
+                                                <Label Text="{Binding .}"
+                                                       FontSize="24"
+                                                       HorizontalOptions="Center" VerticalOptions="Center"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </HorizontalStackLayout>
+                            </ScrollView>
+                            <Label Text="Or enter emoji / image URL manually" Style="{StaticResource HintLabel}"/>
+                            <Entry Text="{Binding Icon}"
+                                   Placeholder="e.g.  🏃  or  https://…"
+                                   Style="{StaticResource FormEntry}"/>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ── Background ── -->
+                <Border Style="{StaticResource SectionCard}">
+                    <VerticalStackLayout Spacing="0">
+                        <Grid Padding="16,14" ColumnDefinitions="*,Auto,Auto">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ToggleSectionCommand}"
+                                                      CommandParameter="background"/>
+                            </Grid.GestureRecognizers>
+                            <Label Grid.Column="0" Text="Background" Style="{StaticResource SectionTitle}"/>
+                            <!-- Current colour preview dot -->
+                            <BoxView Grid.Column="1"
+                                     WidthRequest="18" HeightRequest="18"
+                                     CornerRadius="9"
+                                     Margin="0,0,8,0"
+                                     VerticalOptions="Center"
+                                     BackgroundColor="{Binding BackgroundColor, Converter={StaticResource ColorName}}"
+                                     IsVisible="{Binding BackgroundColor, Converter={StaticResource IsNotNullOrEmpty}}"/>
+                            <Label Grid.Column="2"
+                                   Text="{Binding IsBackgroundExpanded, Converter={StaticResource Chevron}}"
+                                   Style="{StaticResource SectionChevron}"/>
+                        </Grid>
+                        <VerticalStackLayout IsVisible="{Binding IsBackgroundExpanded}" Padding="16,0,16,14">
+                            <BoxView Style="{StaticResource SectionDivider}" Margin="0,0,0,14"/>
+                            <Label Text="Colour" Style="{StaticResource HintLabel}"/>
+                            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,0,0,14">
+                                <HorizontalStackLayout Spacing="8"
+                                                       BindableLayout.ItemsSource="{x:Static vm:HabitEditViewModel.ColorOptions}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="x:String">
+                                            <Border WidthRequest="40" HeightRequest="40"
+                                                    StrokeShape="RoundRectangle 20"
+                                                    StrokeThickness="0"
+                                                    BackgroundColor="{Binding ., Converter={StaticResource ColorName}}">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="OnBackgroundColorTapped"/>
+                                                </Border.GestureRecognizers>
+                                            </Border>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </HorizontalStackLayout>
+                            </ScrollView>
+                            <Label Text="Search photos" Style="{StaticResource HintLabel}"/>
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,0,0,8">
+                                <Entry Grid.Column="0"
+                                       Text="{Binding BackgroundSearch}"
+                                       Placeholder="e.g. nature, mountain…"
+                                       Style="{StaticResource FormEntry}"
+                                       ReturnCommand="{Binding SearchBackgroundCommand}"/>
+                                <Button Grid.Column="1"
+                                        Text="Search"
+                                        BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#2C2C2E}"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                                        CornerRadius="10"
+                                        HeightRequest="46"
+                                        WidthRequest="80"
+                                        FontSize="14"
+                                        Padding="0"
+                                        Command="{Binding SearchBackgroundCommand}"/>
+                            </Grid>
+                            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,0,0,14"
+                                        IsVisible="{Binding HasBackgroundPhotos}">
+                                <HorizontalStackLayout Spacing="8"
+                                                       BindableLayout.ItemsSource="{Binding BackgroundPhotos}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="models:UnsplashPhoto">
+                                            <Border WidthRequest="90" HeightRequest="60"
+                                                    StrokeShape="RoundRectangle 8"
+                                                    StrokeThickness="0"
+                                                    Padding="0">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="OnPhotoTapped"/>
+                                                </Border.GestureRecognizers>
+                                                <Image Source="{Binding ThumbUrl}"
+                                                       Aspect="AspectFill"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </HorizontalStackLayout>
+                            </ScrollView>
+                            <Label Text="Or enter image URL manually" Style="{StaticResource HintLabel}"/>
+                            <Entry Text="{Binding BackgroundImageUrl}"
+                                   Placeholder="https://…"
+                                   Style="{StaticResource FormEntry}"/>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ── Completed Colour ── -->
+                <Border Style="{StaticResource SectionCard}">
+                    <VerticalStackLayout Spacing="0">
+                        <Grid Padding="16,14" ColumnDefinitions="*,Auto,Auto">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding ToggleSectionCommand}"
+                                                      CommandParameter="accent"/>
+                            </Grid.GestureRecognizers>
+                            <Label Grid.Column="0" Text="Completed Colour" Style="{StaticResource SectionTitle}"/>
+                            <BoxView Grid.Column="1"
+                                     WidthRequest="18" HeightRequest="18"
+                                     CornerRadius="9"
+                                     Margin="0,0,8,0"
+                                     VerticalOptions="Center"
+                                     BackgroundColor="{Binding AccentColor, Converter={StaticResource ColorName}}"
+                                     IsVisible="{Binding AccentColor, Converter={StaticResource IsNotNullOrEmpty}}"/>
+                            <Label Grid.Column="2"
+                                   Text="{Binding IsAccentExpanded, Converter={StaticResource Chevron}}"
+                                   Style="{StaticResource SectionChevron}"/>
+                        </Grid>
+                        <VerticalStackLayout IsVisible="{Binding IsAccentExpanded}" Padding="16,0,16,14">
+                            <BoxView Style="{StaticResource SectionDivider}" Margin="0,0,0,14"/>
+                            <Label Text="Colour of completed days" Style="{StaticResource HintLabel}"/>
+                            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                                <HorizontalStackLayout Spacing="8"
+                                                       BindableLayout.ItemsSource="{x:Static vm:HabitEditViewModel.ColorOptions}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="x:String">
+                                            <Border WidthRequest="40" HeightRequest="40"
+                                                    StrokeShape="RoundRectangle 20"
+                                                    StrokeThickness="0"
+                                                    BackgroundColor="{Binding ., Converter={StaticResource ColorName}}">
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="OnAccentColorTapped"/>
+                                                </Border.GestureRecognizers>
+                                            </Border>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </HorizontalStackLayout>
+                            </ScrollView>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- ── Save ── -->
+                <Button Text="Save"
+                        BackgroundColor="White"
+                        TextColor="Black"
+                        FontAttributes="Bold"
+                        CornerRadius="14"
+                        HeightRequest="50"
+                        Margin="0,8,0,0"
+                        Command="{Binding SaveCommand}"/>
+
+                <!-- ── Delete ── -->
+                <Button Text="Delete Habit"
+                        BackgroundColor="White"
+                        TextColor="#E53935"
+                        CornerRadius="14"
+                        HeightRequest="50"
+                        Margin="0,10,0,0"
+                        Command="{Binding DeleteCommand}"/>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

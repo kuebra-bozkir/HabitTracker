@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Class="HabitTracker.Views.MainPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:HabitTracker.ViewModels"
+             xmlns:models="clr-namespace:HabitTracker.Models"
+             xmlns:conv="clr-namespace:HabitTracker.Converters"
+             x:DataType="vm:MainViewModel"
+             x:Name="mainPage"
+             Title="Habits"
+             BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
+
+    <ContentPage.Resources>
+        <conv:IsNullOrEmptyConverter x:Key="IsNullOrEmpty"/>
+        <conv:IsNotNullOrEmptyConverter x:Key="IsNotNullOrEmpty"/>
+        <conv:IsUrlConverter x:Key="IsUrl"/>
+        <conv:IsNotUrlConverter x:Key="IsNotUrl"/>
+        <conv:ColorNameToColorConverter x:Key="ColorName"/>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Header -->
+        <Border Grid.Row="0"
+                BackgroundColor="{AppThemeBinding Light=White, Dark={StaticResource CardBackgroundDark}}"
+                Padding="20,0,20,14">
+            <Border.Shadow>
+                <Shadow Brush="{AppThemeBinding Light=#12000000, Dark=#44000000}"
+                        Offset="0,2" Radius="6" Opacity="1"/>
+            </Border.Shadow>
+            <Grid ColumnDefinitions="*,Auto" Margin="0,52,0,0">
+                <Label Grid.Column="0"
+                       Text="My Habits"
+                       FontSize="26"
+                       FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                       VerticalOptions="Center"/>
+                <Button Grid.Column="1"
+                        Text="+"
+                        FontSize="24"
+                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                        BackgroundColor="Transparent"
+                        WidthRequest="44"
+                        HeightRequest="44"
+                        Padding="0"
+                        Command="{Binding CreateHabitCommand}"
+                        SemanticProperties.Hint="Create new habit"/>
+            </Grid>
+        </Border>
+
+        <!-- Habit list -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding Habits}"
+                        SelectionMode="Single"
+                        SelectedItem="{Binding SelectedHabit}"
+                        EmptyView="No habits yet — tap + to create one.">
+
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="0"/>
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Habit">
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Delete"
+                                           BackgroundColor="#E53935"
+                                           Invoked="OnDeleteInvoked"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+
+                        <!-- Grid wraps the card so VSM can suppress the native selection highlight -->
+                        <Grid BackgroundColor="Transparent">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="Selected">
+                                        <VisualState.Setters>
+                                            <Setter Property="BackgroundColor" Value="Transparent"/>
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+
+                            <Border Margin="16,8"
+                                    Padding="0"
+                                    StrokeShape="RoundRectangle 14"
+                                    Stroke="Transparent"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
+
+                                <Border.Shadow>
+                                    <Shadow Brush="{AppThemeBinding Light=#22000000, Dark=#44000000}"
+                                            Offset="0,2" Radius="8" Opacity="1"/>
+                                </Border.Shadow>
+
+                                <Grid Padding="16,14"
+                                      ColumnDefinitions="Auto,*"
+                                      ColumnSpacing="12">
+                                    <Label Grid.Column="0"
+                                           Text="{Binding Icon}"
+                                           FontSize="26"
+                                           VerticalOptions="Center"
+                                           IsVisible="{Binding Icon, Converter={StaticResource IsNotUrl}}"/>
+                                    <Image Grid.Column="0"
+                                           Source="{Binding Icon}"
+                                           WidthRequest="34" HeightRequest="34"
+                                           Aspect="AspectFit"
+                                           VerticalOptions="Center"
+                                           IsVisible="{Binding Icon, Converter={StaticResource IsUrl}}"/>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}"
+                                               FontSize="17"
+                                               FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"/>
+                                        <HorizontalStackLayout Spacing="12">
+                                            <Label Text="{Binding CurrentStreak, StringFormat='Streak: {0}'}"
+                                                   FontSize="13"
+                                                   TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"/>
+                                            <Label Text="{Binding Total, StringFormat='Total: {0}'}"
+                                                   FontSize="13"
+                                                   TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"/>
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

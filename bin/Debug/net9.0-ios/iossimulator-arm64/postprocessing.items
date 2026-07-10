@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <_PostProcessingItem Include="HabitTracker.app/HabitTracker">
+      <IsAppExtension>false</IsAppExtension>
+      <BCSymbolMapName>HabitTracker.bcsymbolmap</BCSymbolMapName>
+      <NoDSymUtil>true</NoDSymUtil>
+      <dSYMSourcePathExists>false</dSYMSourcePathExists>
+      <NoSymbolStrip>true</NoSymbolStrip>
+      <dSYMInfoPlistRelativePath>HabitTracker.app.dSYM\Contents\Info.plist</dSYMInfoPlistRelativePath>
+      <SymbolFile>/Users/niklasniggemann/kuebra/PraktischeInformatik/HabitTracker/obj/Debug/net9.0-ios/iossimulator-arm64/mtouch-symbols.list</SymbolFile>
+      <DSymName>HabitTracker.app.dSYM</DSymName>
+      <SourceProjectPath>/Users/niklasniggemann/kuebra/PraktischeInformatik/HabitTracker</SourceProjectPath>
+      <IsXPCService></IsXPCService>
+    </_PostProcessingItem>
+  </ItemGroup>
+</Project>
