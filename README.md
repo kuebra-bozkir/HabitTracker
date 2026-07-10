@@ -15,8 +15,7 @@ Each habit is fully customizable — users can assign an emoji or image icon, pi
 - **Stats** — streak, total, and monthly percentage, updated live
 - **Notes** — free-text notes per habit, auto-saved with debounce
 - **Customization** — emoji picker, color palette, Unsplash photo search
-- **Dark mode** — full light/dark theme support
-
+  
 ## Architecture
 
 The project follows the **MVVM** pattern using CommunityToolkit.Mvvm for observable properties and relay commands. The three screens (main list, habit detail, habit edit) each have a dedicated ViewModel. Dependency injection is handled by MAUI's built-in DI container.
